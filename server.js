@@ -4,7 +4,6 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
-const port = 3000;
 
 // Enable CORS
 app.use(cors());
@@ -34,6 +33,5 @@ app.post('/calculate-sip', (req, res) => {
     });
 });
 
-app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-});
+// Export the app for Vercel
+module.exports = app;
