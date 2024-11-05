@@ -16,23 +16,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
 app.post('/calculate-sip', (req, res) => {
-    const { monthlyInvestment, annualInterestRate, investmentPeriodYears, inflationRate, stepUpPercentage } = req.body;
+    const { monthlyInvestment, annualInterestRate, investmentPeriodYears, inflationRate } = req.body;
     
+    // Convert annual interest rate to monthly rate
     const monthlyRate = annualInterestRate / 12 / 100;
-    let futureValue = 0;
-
-    // Calculate future value with yearly step-up
-    let currentMonthlyInvestment = monthlyInvestment;
-    for (let year = 1; year <= investmentPeriodYears; year++) {
-        const monthsInYear = 12;
-        const n = monthsInYear * (investmentPeriodYears - year + 1);
-        
-        // Calculate FV for the current year's monthly investment amount
-        futureValue += currentMonthlyInvestment * ((1 + monthlyRate) ** n - 1) / monthlyRate * (1 + monthlyRate);
-
-        // Apply yearly step-up
-        currentMonthlyInvestment *= (1 + stepUpPercentage / 100);
-    }
+    const n = investmentPeriodYears * 12;
+    
+    // Calculate future value of SIP without inflation adjustment
+    const futureValue = monthlyInvestment * ((1 + monthlyRate) ** n - 1) / monthlyRate * (1 + monthlyRate);
 
     // Adjust for inflation
     const inflationAdjustedFutureValue = futureValue / ((1 + (inflationRate / 100)) ** investmentPeriodYears);
